@@ -26,6 +26,17 @@ body {
     padding: 20px;
 }
 
+ul {
+    list-style: none; 
+    padding: 0;
+}
+
+li {
+    margin-bottom: 20px; 
+    text-align: center;
+}
+
+
 .apresentacao {
     max-width: 800px;
     margin: 0 auto;
@@ -70,38 +81,51 @@ body {
 .apresentacao_icone{
     width: 40px;
     height: 40px;
-    left: 4070;
     transition: transform 0.3s ease;
 }
 
-.botao_rifa{
-    color: var(--cor-terciaria);
-    background-color: var(--cor-primaria);
-    border-radius: 5px;
-    transition: trasmform 0.3s ease;
-    border-style: solid;
-    border-color: var(--cor-quartaria);
-    text-decoration: none;
 
+.botao_rifa {
+    display: inline-block;
+    text-align: center;
+    width: fit-content;
+    padding: 1rem 2rem; 
 }
 
-.botao_instagram{
-    color: var(--cor-terciaria);
-    background-color: var(--cor-primaria);
-    border-radius: 5px;
-    transition: trasmform 0.3s ease;
-    border-style: solid;
-    border-color: var(--cor-quartaria);
-    text-decoration: none;
 
+
+.apresentacao__links__navegacao {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 8px;
+    padding: 1rem;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--cor-terciaria);
+    background-color: var(--cor-quintaria);
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.botao_instagram:hover{
-    transform: scale(1.1);
+.apresentacao__links__navegacao:hover {
+    background-color: var(--cor-hover);
+    transform: translateY(-3px);
+}
+
+.apresentacao__links__imagem {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s ease;
+}
+
+.apresentacao__links__imagem:hover {
+    transform: scale(1.2);
 }
 
 .botao_rifa:hover{
-    transform: scale(1.1);
+    background-color: var(--cor-hover);
+    transform: translateY(-3px);
 }
 
 .apresentacao__imagem:hover {
@@ -120,6 +144,21 @@ body {
         padding: 10px;
     }
     .apresentacao__imagem {
-        width: 150px;
+        width: 90%;
+        max-width: 250px;
     }
+
+    .apresentacao__links__navegacao {
+        font-size: 1rem;
+    }
+    .apresentacao__links__imagem {
+        width: 30px;
+        height: 30px;
+    }
+
+    .apresentacao__links__navegacao {
+        padding: 0.5rem; 
+        font-size: 0.9rem; 
+    }
+
 }

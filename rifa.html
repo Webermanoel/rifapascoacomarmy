@@ -1,0 +1,57 @@
+<form id="form-rifa">
+    <input type="text" id="nome" placeholder="Seu Nome" required>
+    <input type="text" id="telefone" placeholder="Seu WhatsApp" required>
+    <input type="number" id="numero" placeholder="Número desejado" required>
+    <button type="submit">Comprar</button>
+</form>
+
+<p id="mensagem"></p>
+
+<div>
+    <label for="pix-key">Chave Pix: </label>
+    <input type="text" id="pix-key" value="56964598-125d-4c66-a8fa-e33285094c54" readonly>
+    <button id="copy-btn">Copiar</button>
+</div>
+
+<script>
+document.getElementById("form-rifa").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const nome = document.getElementById("nome").value;
+    const telefone = document.getElementById("telefone").value;
+    const numero = document.getElementById("numero").value;
+
+    fetch(`/verificar-numero/${numero}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.disponivel) {
+                document.getElementById("mensagem").textContent = "❌ Esse número já foi comprado!";
+            } else {
+                fetch('/comprar', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nome, telefone, numero })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("mensagem").textContent = data.message;
+                });
+            }
+        });
+});
+
+
+document.getElementById('copy-btn').addEventListener('click', function() {
+    const pixKey = document.getElementById('pix-key');
+    
+    
+    pixKey.select();
+    pixKey.setSelectionRange(0, 99999); 
+
+   
+    document.execCommand('copy');
+
+    
+    alert('Chave Pix copiada para a área de transferência!');
+});
+</script>
