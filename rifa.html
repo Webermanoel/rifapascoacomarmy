@@ -71,9 +71,10 @@
             const data = await response.json();
             document.getElementById('mensagem').innerText = data.message;
 
+            
             if (data.success) {
                 document.getElementById('pixContainer').style.display = 'block';
-                document.getElementById('pixCode').innerText = 'Chave PIX: ' + data.pixCode; // Atualiza o código PIX
+                document.getElementById('pixCode').innerText = 'Chave PIX: ' + data.pixCode;
             }
         });
 
