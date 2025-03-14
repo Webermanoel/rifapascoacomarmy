@@ -1,57 +1,88 @@
-<form id="form-rifa">
-    <input type="text" id="nome" placeholder="Seu Nome" required>
-    <input type="text" id="telefone" placeholder="Seu WhatsApp" required>
-    <input type="number" id="numero" placeholder="Número desejado" required>
-    <button type="submit">Comprar</button>
-</form>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra de Rifa</title>
+    <style>
+        #pixContainer {
+            display: none;
+            margin-top: 20px;
+        }
+        #pixCode {
+            font-family: monospace;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #copyBtn {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        #copyBtn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h2>Escolha seu número da rifa</h2>
+    <form id="rifaForm">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required><br><br>
 
-<p id="mensagem"></p>
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" required><br><br>
 
-<div>
-    <label for="pix-key">Chave Pix: </label>
-    <input type="text" id="pix-key" value="56964598-125d-4c66-a8fa-e33285094c54" readonly>
-    <button id="copy-btn">Copiar</button>
-</div>
+        <label for="numero">Número da Rifa:</label>
+        <input type="number" id="numero" name="numero" required><br><br>
 
-<script>
-document.getElementById("form-rifa").addEventListener("submit", function(event) {
-    event.preventDefault();
+        <button type="submit">Comprar</button>
+    </form>
 
-    const nome = document.getElementById("nome").value;
-    const telefone = document.getElementById("telefone").value;
-    const numero = document.getElementById("numero").value;
+    <p id="mensagem"></p>
 
-    fetch(`/verificar-numero/${numero}`)
-        .then(response => response.json())
-        .then(data => {
-            if (!data.disponivel) {
-                document.getElementById("mensagem").textContent = "❌ Esse número já foi comprado!";
-            } else {
-                fetch('/comprar', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ nome, telefone, numero })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("mensagem").textContent = data.message;
-                });
+    <div id="pixContainer">
+        <h3>Faça o pagamento com o código PIX abaixo:</h3>
+        <p id="pixCode"></p>
+        <button id="copyBtn" onclick="copyPixCode()">Copiar Código PIX</button>
+    </div>
+
+    <script>
+        document.getElementById('rifaForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById('nome').value;
+            const telefone = document.getElementById('telefone').value;
+            const numero = document.getElementById('numero').value;
+
+            const response = await fetch('http://localhost:3000/intencao-compra', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nome, telefone, numero })
+            });
+
+            const data = await response.json();
+            document.getElementById('mensagem').innerText = data.message;
+
+            if (data.success) {
+                document.getElementById('pixContainer').style.display = 'block';
+                document.getElementById('pixCode').innerText = 'Chave PIX: ' + data.pixCode; // Atualiza o código PIX
             }
         });
-});
 
-
-document.getElementById('copy-btn').addEventListener('click', function() {
-    const pixKey = document.getElementById('pix-key');
-    
-    
-    pixKey.select();
-    pixKey.setSelectionRange(0, 99999); 
-
-   
-    document.execCommand('copy');
-
-    
-    alert('Chave Pix copiada para a área de transferência!');
-});
-</script>
+        function copyPixCode() {
+            const pixCode = document.getElementById('pixCode').innerText;
+            navigator.clipboard.writeText(pixCode).then(() => {
+                alert('Código PIX copiado com sucesso!');
+            });
+        }
+    </script>
+</body>
+</html>
