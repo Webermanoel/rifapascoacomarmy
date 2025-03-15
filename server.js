@@ -1,17 +1,17 @@
-require('dotenv').config(); 
+require('dotenv').config();
 const mysql = require('mysql2');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const db = mysql.createConnection({
-  host: process.env.DB_HOST, 
-  user: process.env.DB_USER, 
-  password: process.env.DB_PASSWORD, 
-  database: process.env.DB_NAME 
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
-db.connect(function(err) {
+db.connect(function (err) {
   if (err) {
     console.error('Erro ao conectar ao MySQL:', err.stack);
     return;
@@ -40,20 +40,41 @@ app.post('/intencao-compra', (req, res) => {
       return res.json({ success: false, message: 'Número já comprado!' });
     }
 
-    db.query('INSERT INTO compras_rifa (nome, numero, telefone, pago) VALUES (?, ?, ?, ?)', 
-    [nome, numero, telefone, false], (err) => {
-      if (err) {
-        console.error('Erro ao registrar a compra: ', err);
-        return res.status(500).json({ error: err });
-      }
+    db.query(
+      'INSERT INTO compras_rifa (nome, numero, telefone, pago) VALUES (?, ?, ?, ?)',
+      [nome, numero, telefone, false],
+      (err) => {
+        if (err) {
+          console.error('Erro ao registrar a compra: ', err);
+          return res.status(500).json({ error: err });
+        }
 
-      console.log(`✅ Compra registrada com sucesso para ${nome}, número: ${numero}.`);
-      res.json({ 
-        success: true, 
-        message: 'Intenção de compra registrada. Agora, faça o pagamento!',
-        pixCode: chavePix  
-      });
-    });
+        console.log(`✅ Compra registrada com sucesso para ${nome}, número: ${numero}.`);
+        res.json({
+          success: true,
+          message: 'Intenção de compra registrada. Agora, faça o pagamento!',
+          pixCode: chavePix
+        });
+      }
+    );
+  });
+});
+
+app.get('/numeros', (req, res) => {
+  db.query('SELECT numero FROM compras_rifa', (err, result) => {
+    if (err) {
+      console.error('Erro ao buscar os números comprados: ', err);
+      return res.status(500).json({ error: err });
+    }
+
+    const numerosComprados = result.map(row => row.numero);
+    const numeros = [];
+
+    for (let i = 1; i <= 1000; i++) {
+      numeros.push({ numero: i, comprado: numerosComprados.includes(i) });
+    }
+
+    res.json(numeros);
   });
 });
 

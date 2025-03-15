@@ -27,6 +27,29 @@
         #copyBtn:hover {
             background-color: #45a049;
         }
+        .rifa-table {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        .rifa-number {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+            cursor: pointer;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .rifa-number:hover {
+            background-color: #f1f1f1;
+        }
+        .comprado {
+            background-color: #ff4d4d;
+            color: white;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -52,7 +75,34 @@
         <button id="copyBtn" onclick="copyPixCode()">Copiar Código PIX</button>
     </div>
 
+    <h3>Números Disponíveis:</h3>
+    <div id="rifaNumbers" class="rifa-table"></div>
+
     <script>
+        async function carregarNumeros() {
+            const response = await fetch('http://localhost:3000/numeros');
+            const numeros = await response.json();
+            const tabela = document.getElementById('rifaNumbers');
+
+            tabela.innerHTML = ''; 
+
+            numeros.forEach(n => {
+                const numeroElemento = document.createElement('div');
+                numeroElemento.classList.add('rifa-number');
+                numeroElemento.innerText = n.numero;
+
+                if (n.comprado) {
+                    numeroElemento.classList.add('comprado');
+                } else {
+                    numeroElemento.onclick = () => {
+                        document.getElementById('numero').value = n.numero;
+                    };
+                }
+
+                tabela.appendChild(numeroElemento);
+            });
+        }
+
         document.getElementById('rifaForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
@@ -71,10 +121,10 @@
             const data = await response.json();
             document.getElementById('mensagem').innerText = data.message;
 
-            
             if (data.success) {
                 document.getElementById('pixContainer').style.display = 'block';
                 document.getElementById('pixCode').innerText = 'Chave PIX: ' + data.pixCode;
+                carregarNumeros(); 
             }
         });
 
@@ -84,6 +134,8 @@
                 alert('Código PIX copiado com sucesso!');
             });
         }
+
+        carregarNumeros(); 
     </script>
 </body>
 </html>
