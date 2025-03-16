@@ -5,21 +5,19 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const db = mysql.createConnection({
-  host: process.env.MYSQLHOST,  // O host do banco de dados
-  user: process.env.MYSQLUSER,  // O usuário do banco de dados
-  password: process.env.MYSQLPASSWORD,  // A senha do banco de dados
-  database: process.env.MYSQL_DATABASE,  // O nome do banco de dados
-  port: process.env.MYSQLPORT,  // A porta (geralmente 3306)
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
-db.connect(function(err) {
+db.connect(function (err) {
   if (err) {
     console.error('Erro ao conectar ao MySQL:', err.stack);
     return;
   }
   console.log('Conectado ao MySQL como ID ' + db.threadId);
 });
-
 
 const app = express();
 app.use(cors());

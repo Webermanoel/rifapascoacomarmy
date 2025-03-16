@@ -26,6 +26,15 @@ body {
     padding: 20px;
 }
 
+.rifa_body{
+    background-color: var(--cor-primaria);
+    color: var(--cor-quartaria);
+    font-family: var(--fonte-primaria);
+    line-height: 1.6;
+    text-align: center;
+    padding: 20px;
+}
+
 ul {
     list-style: none; 
     padding: 0;
