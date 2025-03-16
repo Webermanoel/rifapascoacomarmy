@@ -1,20 +1,25 @@
 require('dotenv').config();
-const { Pool } = require('pg');
+const { Pool } = require('pg'); 
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
-const db = new Pool({
-  host: process.env.DB_HOST,
+const pool = new Pool({
+  host: process.env.DB_HOST, 
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT
+  database: process.env.DB_NAME, 
+  port: process.env.DB_PORT,
+  ssl: { rejectUnauthorized: false } 
 });
 
-db.connect()
-  .then(() => console.log("✅ Conectado ao PostgreSQL!"))
-  .catch(err => console.error("❌ Erro ao conectar no banco de dados:", err));
+pool.connect((err) => {
+  if (err) {
+    console.error('❌ Erro ao conectar no banco de dados:', err);
+    return;
+  }
+  console.log('✅ Conexão estabelecida com o banco de dados PostgreSQL!');
+});
 
 const app = express();
 app.use(cors());
@@ -28,14 +33,14 @@ app.post('/intencao-compra', async (req, res) => {
   console.log(`📝 Intenção de compra recebida: Nome: ${nome}, Número: ${numero}, Telefone: ${telefone}`);
 
   try {
-    const { rowCount } = await db.query('SELECT 1 FROM compras_rifa WHERE numero = $1', [numero]);
+    const { rows } = await pool.query('SELECT * FROM compras_rifa WHERE numero = $1', [numero]);
     
-    if (rowCount > 0) {
+    if (rows.length > 0) {
       console.log(`⚠️ Número ${numero} já foi comprado!`);
       return res.json({ success: false, message: 'Número já comprado!' });
     }
 
-    await db.query(
+    await pool.query(
       'INSERT INTO compras_rifa (nome, numero, telefone, pago) VALUES ($1, $2, $3, $4)',
       [nome, numero, telefone, false]
     );
@@ -46,7 +51,6 @@ app.post('/intencao-compra', async (req, res) => {
       message: 'Intenção de compra registrada. Agora, faça o pagamento!',
       pixCode: chavePix
     });
-
   } catch (err) {
     console.error('Erro ao registrar a compra: ', err);
     res.status(500).json({ error: err.message });
@@ -55,8 +59,8 @@ app.post('/intencao-compra', async (req, res) => {
 
 app.get('/numeros', async (req, res) => {
   try {
-    const result = await db.query('SELECT numero FROM compras_rifa');
-    const numerosComprados = result.rows.map(row => row.numero);
+    const { rows } = await pool.query('SELECT numero FROM compras_rifa');
+    const numerosComprados = rows.map(row => row.numero);
     const numeros = [];
 
     for (let i = 1; i <= 1000; i++) {
@@ -64,7 +68,6 @@ app.get('/numeros', async (req, res) => {
     }
 
     res.json(numeros);
-
   } catch (err) {
     console.error('Erro ao buscar os números comprados: ', err);
     res.status(500).json({ error: err.message });
