@@ -1,5 +1,14 @@
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 require('dotenv').config(); 
 const { Pool } = require('pg'); 
+
+const app = express();  
+const port = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(bodyParser.json());
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -7,7 +16,7 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  ssl: { rejectUnauthorized: false }  // Se estiver usando conexão segura
+  ssl: { rejectUnauthorized: false }  
 });
 
 pool.connect((err) => {
@@ -18,10 +27,9 @@ pool.connect((err) => {
   console.log('✅ Conexão estabelecida com o banco de dados PostgreSQL!');
 });
 
-
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 
 const chavePix = process.env.PIX_KEY;
 
@@ -72,4 +80,6 @@ app.get('/numeros', async (req, res) => {
   }
 });
 
-app.listen(3000, "0.0.0.0", () => console.log('🚀 Servidor rodando na porta 3000'));
+app.listen(port, "0.0.0.0", () => {
+  console.log(`🚀 Servidor rodando na porta ${port}`);
+});
