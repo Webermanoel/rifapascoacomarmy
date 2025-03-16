@@ -1,21 +1,13 @@
-require('dotenv').config();
-console.log("🔍 Variáveis de ambiente carregadas:");
-console.log("DB_HOST:", process.env.DB_HOST);
-console.log("DB_USER:", process.env.DB_USER);
-console.log("DB_PORT:", process.env.DB_PORT);
-
+require('dotenv').config(); 
 const { Pool } = require('pg'); 
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
 
 const pool = new Pool({
-  host: process.env.DB_HOST, 
+  host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME, 
+  database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  ssl: { rejectUnauthorized: false } 
+  ssl: { rejectUnauthorized: false }  // Se estiver usando conexão segura
 });
 
 pool.connect((err) => {
@@ -25,6 +17,7 @@ pool.connect((err) => {
   }
   console.log('✅ Conexão estabelecida com o banco de dados PostgreSQL!');
 });
+
 
 const app = express();
 app.use(cors());
