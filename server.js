@@ -5,18 +5,19 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+  host: process.env.MYSQLHOST,      
+  user: process.env.MYSQLUSER,      
+  password: process.env.MYSQLPASSWORD,  
+  database: process.env.MYSQLDATABASE,  
+  port: process.env.MYSQLPORT || 3306
 });
 
-db.connect(function (err) {
+db.connect((err) => {
   if (err) {
-    console.error('Erro ao conectar ao MySQL:', err.stack);
+    console.error('Erro ao conectar no banco de dados:', err.stack);
     return;
   }
-  console.log('Conectado ao MySQL como ID ' + db.threadId);
+  console.log('Conexão estabelecida com o banco de dados!');
 });
 
 const app = express();
@@ -78,4 +79,4 @@ app.get('/numeros', (req, res) => {
   });
 });
 
-app.listen(3000, () => console.log('Servidor rodando na porta 3000'));
+app.listen(3000, "0.0.0.0", () => console.log('Servidor rodando na porta 3000'));
