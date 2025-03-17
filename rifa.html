@@ -124,7 +124,7 @@
 
             if (data.success) {
                 document.getElementById('pixContainer').style.display = 'block';
-                document.getElementById('pixCode').innerText = 'Chave PIX: ' + data.pixCode;
+                document.getElementById('pixCode').innerText = data.pixCode;
                 carregarNumeros(); 
             }
         });
