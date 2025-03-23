@@ -2,10 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config(); 
-const { Pool } = require('pg');
-const Joi = require('joi');
+const { Pool } = require('pg'); 
 
-const app = express();
+const app = express();  
 const port = process.env.PORT || 3000;
 
 app.use(cors());
@@ -17,22 +16,25 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT || 5432,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false } 
 });
 
-const schemaCompra = Joi.object({
-  nome: Joi.string().min(3).required(),
-  numero: Joi.number().integer().min(1).max(1000).required(),
-  telefone: Joi.string().pattern(/^[0-9]{10,11}$/).required(),
+pool.connect((err) => {
+  if (err) {
+    console.error('❌ Erro ao conectar no banco de dados:', err);
+    return;
+  }
+  console.log('✅ Conexão estabelecida com o banco de dados PostgreSQL!');
 });
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+const chavePix = process.env.PIX_KEY;
 
 app.post('/intencao-compra', async (req, res) => {
   const { nome, numero, telefone } = req.body;
-  
-  const { error } = schemaCompra.validate(req.body);
-  if (error) {
-    return res.status(400).json({ success: false, message: error.details[0].message });
-  }
 
   console.log(`📝 Intenção de compra recebida: Nome: ${nome}, Número: ${numero}, Telefone: ${telefone}`);
 
@@ -57,7 +59,24 @@ app.post('/intencao-compra', async (req, res) => {
     });
   } catch (err) {
     console.error('Erro ao registrar a compra: ', err);
-    res.status(500).json({ error: 'Erro interno. Tente novamente mais tarde.' });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/numeros', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT numero FROM compras_rifa');
+    const numerosComprados = rows.map(row => row.numero);
+    const numeros = [];
+
+    for (let i = 1; i <= 1000; i++) {
+      numeros.push({ numero: i, comprado: numerosComprados.includes(i) });
+    }
+
+    res.json(numeros);
+  } catch (err) {
+    console.error('Erro ao buscar os números comprados: ', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
