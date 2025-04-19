@@ -80,6 +80,25 @@ app.get('/numeros', async (req, res) => {
   }
 });
 
+app.get('/exportar-rifas', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM compras_rifa');
+
+    let csv = 'ID,Nome,Telefone,Número,Pago\n';
+    result.rows.forEach(r => {
+      csv += `${r.id},${r.nome},${r.telefone},${r.numero},${r.pago}\n`;
+    });
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=rifas.csv');
+    res.send(csv);
+  } catch (err) {
+    console.error('Erro ao exportar rifas: ', err);
+    res.status(500).send('Erro ao exportar rifas');
+  }
+});
+
+
 app.listen(port, "0.0.0.0", () => {
   console.log(`🚀 Servidor rodando na porta ${port}`);
 });
