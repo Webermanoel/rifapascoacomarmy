@@ -14,8 +14,8 @@
     async function sortear() {
       const chave = document.getElementById('chave').value;
       
-      // Fazendo uma requisição POST com o corpo da chave
-      const res = await fetch('/sortear', {
+      // Ajuste o caminho para o backend correto
+      const res = await fetch('https://rifapascoacomarmy.vercel.app/api/sortear', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chave }) // Envia a chave no corpo da requisição
@@ -24,7 +24,7 @@
       const data = await res.json(); // Converte a resposta em JSON
 
       if (data.sucesso) { // Se o sorteio foi bem-sucedido
-        document.getElementById('resultado').innerHTML = `
+        document.getElementById('resultado').innerHTML = ` 
           <h2>🏆 Vencedor:</h2>
           <p><strong>Nome:</strong> ${data.vencedor.nome}</p>
           <p><strong>Telefone:</strong> ${data.vencedor.telefone}</p>
