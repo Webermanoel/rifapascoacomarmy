@@ -31,5 +31,5 @@ const res = await fetch('/sortear', {
       console.error('Erro ao realizar sorteio: ', err);
       res.status(500).json({ sucesso: false, mensagem: 'Erro ao realizar sorteio.' });
     }
-  });
+  ;
   
