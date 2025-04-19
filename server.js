@@ -98,6 +98,17 @@ app.get('/exportar-rifas', async (req, res) => {
   }
 });
 
+app.get('/listar', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM compras_rifa WHERE pago = true ORDER BY numero ASC');
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao buscar dados' });
+  }
+});
+
+
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`🚀 Servidor rodando na porta ${port}`);
