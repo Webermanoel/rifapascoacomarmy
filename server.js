@@ -108,6 +108,66 @@ app.get('/listar', async (req, res) => {
   }
 });
 
+app.get('/imprimir', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM compras_rifa WHERE pago = true ORDER BY numero ASC');
+
+    let html = `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <title>Rifas Pagas - Impressão</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h1 { text-align: center; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+          th { background-color: #f4f4f4; }
+          @media print {
+            button { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>📄 Rifas Pagas</h1>
+        <button onclick="window.print()">🖨️ Imprimir</button>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Número</th>
+              <th>Pago</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+    result.rows.forEach(r => {
+      html += `
+        <tr>
+          <td>${r.id || ''}</td>
+          <td>${r.nome || ''}</td>
+          <td>${r.telefone || ''}</td>
+          <td>${r.numero || ''}</td>
+          <td>${r.pago ? 'Sim' : 'Não'}</td>
+        </tr>`;
+    });
+
+    html += `
+          </tbody>
+        </table>
+      </body>
+      </html>`;
+
+    res.send(html);
+
+  } catch (err) {
+    console.error('❌ Erro ao gerar página de impressão:', err);
+    res.status(500).send('Erro ao carregar os dados para impressão.');
+  }
+});
 
 
 app.listen(port, "0.0.0.0", () => {
