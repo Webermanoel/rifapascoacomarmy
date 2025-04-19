@@ -13,17 +13,24 @@
   <script>
     async function sortear() {
       const chave = document.getElementById('chave').value;
-      const res = await fetch(`/sortear?chave=${encodeURIComponent(chave)}`);
-      const data = await res.json();
+      
+      // Fazendo uma requisição POST com o corpo da chave
+      const res = await fetch('/sortear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chave }) // Envia a chave no corpo da requisição
+      });
+      
+      const data = await res.json(); // Converte a resposta em JSON
 
-      if (data.sucesso) {
+      if (data.sucesso) { // Se o sorteio foi bem-sucedido
         document.getElementById('resultado').innerHTML = `
           <h2>🏆 Vencedor:</h2>
           <p><strong>Nome:</strong> ${data.vencedor.nome}</p>
           <p><strong>Telefone:</strong> ${data.vencedor.telefone}</p>
           <p><strong>Número:</strong> ${data.vencedor.numero}</p>
         `;
-      } else {
+      } else { // Se houve algum erro
         document.getElementById('resultado').innerText = data.mensagem;
       }
     }
