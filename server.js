@@ -110,14 +110,13 @@ app.get('/listar', async (req, res) => {
 
 app.get('/imprimir', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM compras_rifa WHERE pago = true ORDER BY numero ASC');
+    const result = await pool.query('SELECT * FROM compras_rifa ORDER BY numero ASC');
 
-    let html = `
-      <!DOCTYPE html>
+    let html = `<!DOCTYPE html>
       <html lang="pt-BR">
       <head>
         <meta charset="UTF-8">
-        <title>Rifas Pagas - Impressão</title>
+        <title>Rifas - Impressão</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; }
           h1 { text-align: center; }
@@ -130,7 +129,7 @@ app.get('/imprimir', async (req, res) => {
         </style>
       </head>
       <body>
-        <h1>📄 Rifas Pagas</h1>
+        <h1>📄 Rifas</h1>
         <button onclick="window.print()">🖨️ Imprimir</button>
         <table>
           <thead>
@@ -155,11 +154,7 @@ app.get('/imprimir', async (req, res) => {
         </tr>`;
     });
 
-    html += `
-          </tbody>
-        </table>
-      </body>
-      </html>`;
+    html += `</tbody></table></body></html>`;
 
     res.send(html);
 
@@ -168,6 +163,7 @@ app.get('/imprimir', async (req, res) => {
     res.status(500).send('Erro ao carregar os dados para impressão.');
   }
 });
+
 
 
 app.listen(port, "0.0.0.0", () => {
